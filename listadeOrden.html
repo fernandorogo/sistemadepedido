@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Pedidos</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h1>Lista de Pedidos</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>Total</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-pedidos">
+        <!-- Los pedidos se cargarán aquí -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+      const tablaPedidos = document.getElementById('tabla-pedidos');
+
+      pedidos.forEach(pedido => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${pedido.cliente.nombre}</td>
+          <td>${pedido.cliente.direccion}</td>
+          <td>${pedido.cliente.telefono}</td>
+          <td>${pedido.cliente.correo}</td>
+          <td>$${pedido.total.toFixed(2)}</td>
+          <td>${pedido.estado}</td>
+        `;
+        tablaPedidos.appendChild(fila);
+      });
+    });
+  </script>
+</body>
+</html>

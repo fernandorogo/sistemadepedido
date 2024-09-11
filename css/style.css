@@ -1,0 +1,13 @@
+/* styles.css */
+.product-card {
+  margin-bottom: 20px;
+}
+.product-card img {
+  width: 100%;
+}
+
+.product-image {
+  width: 400px;     /* Ancho fijo de 400px */
+  height: 267px;    /* Alto fijo de 267px */
+  object-fit: cover;  /* Ajusta la imagen sin perder proporción */
+}

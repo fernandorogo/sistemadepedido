@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h1 class="mb-4">Detalles del Pedido</h1>
+
+    <!-- Sección de Información del Cliente -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Información del Cliente</h5>
+      </div>
+      <div class="card-body">
+        <form id="clienteForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" id="nombre" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="direccion" class="form-label">Dirección</label>
+              <input type="text" id="direccion" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" id="telefono" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="correo" class="form-label">Correo Electrónico</label>
+              <input type="email" id="correo" class="form-control" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Sección de Detalles del Pedido -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Detalles del Pedido</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="detalle-productos">
+            <!-- Los detalles del carrito se insertarán aquí -->
+          </tbody>
+        </table>
+        <h5 class="mt-3">Total Compra: <span id="total-compra">$0.00</span></h5>
+      </div>
+    </div>
+
+    <!-- Sección para Cambiar el Estado del Pedido -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Estado del Pedido</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="estado-pedido" class="form-label">Seleccionar Estado</label>
+          <select id="estado-pedido" class="form-select">
+            <option value="pendiente">Pendiente</option>
+            <option value="en-proceso">En Proceso</option>
+            <option value="enviado">Enviado</option>
+            <option value="entregado">Entregado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <button id="actualizar-estado" class="btn btn-success">Actualizar Estado</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Función para mostrar los detalles del carrito
+    function mostrarCarrito() {
+      const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+      const detalleProductos = document.getElementById('detalle-productos');
+      let totalCompra = 0;
+
+      detalleProductos.innerHTML = ''; // Limpiar el contenido actual
+
+      carrito.forEach(item => {
+        const totalProducto = item.precio * item.cantidad;
+        totalCompra += totalProducto;
+
+        const fila = `
+          <tr>
+            <td>${item.nombre}</td>
+            <td>$${item.precio.toFixed(2)}</td>
+            <td>${item.cantidad}</td>
+            <td>$${totalProducto.toFixed(2)}</td>
+          </tr>
+        `;
+        detalleProductos.innerHTML += fila;
+      });
+
+      // Mostrar el total de la compra
+      document.getElementById('total-compra').innerText = `$${totalCompra.toFixed(2)}`;
+    }
+
+    // Función para mostrar la información del cliente
+    function mostrarInformacionCliente() {
+      const cliente = JSON.parse(localStorage.getItem('cliente')) || {};
+
+      document.getElementById('nombre').value = cliente.nombre || '';
+      document.getElementById('direccion').value = cliente.direccion || '';
+      document.getElementById('telefono').value = cliente.telefono || '';
+      document.getElementById('correo').value = cliente.correo || '';
+    }
+
+    // Manejo del envío del formulario del cliente
+    document.getElementById('clienteForm').addEventListener('submit', function(event) {
+      event.preventDefault();  // Evitar el envío por defecto del formulario
+
+      // Obtener la información del cliente
+      const nombre = document.getElementById('nombre').value;
+      const direccion = document.getElementById('direccion').value;
+      const telefono = document.getElementById('telefono').value;
+      const correo = document.getElementById('correo').value;
+
+      const cliente = {
+        nombre: nombre,
+        direccion: direccion,
+        telefono: telefono,
+        correo: correo
+      };
+
+      // Obtener los datos del carrito
+      const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+      // Combinar la información del cliente con los productos del carrito
+      const pedido = {
+        cliente: cliente,
+        productos: carrito
+      };
+
+      // Enviar el pedido al servidor o al encargado
+      enviarPedido(pedido);
+    });
+
+    async function enviarPedido(pedido) {
+      console.log('Enviando pedido:', pedido);
+      try {
+        // Realiza la solicitud POST para enviar el pedido a la API
+        const response = await fetch('https://tu-api.com/ordenes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(pedido) // Convierte el objeto de pedido a una cadena JSON
+        });
+    
+        // Verifica si la respuesta es satisfactoria
+        if (!response.ok) {
+          throw new Error('Error en la petición');
+        }
+    
+        // Procesa la respuesta JSON de la API
+        const data = await response.json();
+        console.log('Respuesta de la API:', data);
+    
+        // Muestra un mensaje de éxito y limpia los datos del carrito y cliente
+        alert('Pedido enviado exitosamente.');
+        localStorage.removeItem('carrito');  // Limpiar el carrito
+        localStorage.removeItem('cliente');  // Limpiar la información del cliente
+    
+        // Redirige al usuario a la página de lista de órdenes
+        window.location.href = 'listadeOrden.html';
+      } catch (error) {
+        // Muestra un mensaje de error si algo sale mal
+        console.error('Error al enviar el pedido:', error);
+        alert('Hubo un error al enviar el pedido. Por favor intenta de nuevo.');
+      }
+    }
+    
+    
+
+    // Función para actualizar el estado del pedido
+    document.getElementById('actualizar-estado').addEventListener('click', function() {
+      const estado = document.getElementById('estado-pedido').value;
+      alert(`El estado del pedido ha sido actualizado a: ${estado}`);
+
+      // Aquí puedes enviar el estado actualizado al servidor o realizar otra acción
+    });
+
+    // Llamar a las funciones para mostrar el carrito y la información del cliente cuando se carga la página
+    mostrarCarrito();
+    mostrarInformacionCliente();
+  </script>
+</body>
+</html>
